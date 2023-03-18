@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Repositories;
+use App\Constants\Status\StatusConst;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
@@ -168,6 +169,13 @@ abstract class AbstractRepository
         return $this->getQuery()
             ->orderBy('id', 'desc')
             ->paginate($perPage);
+    }
+
+    public function selectAllActives()
+    {
+        return $this->getQuery()
+            ->where('is_active', StatusConst::ACTIVE)
+            ->get();
     }
 }
 

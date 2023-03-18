@@ -25,7 +25,7 @@ Auth::routes();
 
 Route::group(['middleware' => 'auth'], function () {
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::any('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     /**
      * CRUD Materials
@@ -36,6 +36,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
     Route::get('materials/{material}/edit', [MaterialController::class, 'edit'])->name('material.edit');
     Route::put('materials/{material}/update', [MaterialController::class, 'update'])->name('material.update');
     Route::delete('materials/{material}/remove', [MaterialController::class, 'destroy'])->name('material.destroy');
+    Route::put('materials/{material}/update-status', [MaterialController::class, 'updateStatus'])->name('material.status');
 
     /**
      * CRUD Offices
@@ -56,6 +57,7 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
     Route::get('users/{user}/edit', [UserController::class, 'edit'])->name('user.edit');
     Route::put('users/{user}/update', [UserController::class, 'update'])->name('user.update');
     Route::delete('users/{user}/remove', [UserController::class, 'destroy'])->name('user.destroy');
+    Route::put('users/{user}/update-status', [UserController::class, 'updateStatus'])->name('user.status');
 
     /**
      * Movements of Materials - Flow

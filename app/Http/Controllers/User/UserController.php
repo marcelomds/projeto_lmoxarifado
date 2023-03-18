@@ -83,4 +83,22 @@ class UserController extends Controller
 
         return redirect()->route('user.index');
     }
+
+    public function updateStatus(int $id)
+    {
+        try {
+            $this->userRepository->updateStatus($id);
+        } catch (\Exception $e) {
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors($e->getMessage());
+        }
+
+        toast('Atualizado com Sucesso', 'success');
+
+        return redirect()
+            ->route('user.index');
+    }
 }

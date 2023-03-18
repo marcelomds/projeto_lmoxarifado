@@ -30,12 +30,18 @@
                                 <tr>
                                     <td>{{ $office->name }}</td>
                                     <td>
-                                        <a href="{{ route('office.edit', $office->id) }}" class="btn btn-primary btn-sm">Editar</a>
+                                        <a href="{{ route('office.edit', $office->id) }}"
+                                           class="btn btn-primary btn-sm"
+                                           title="Editar"
+                                        >
+                                            <i class="fas fa-edit"></i>
+                                        </a>
                                         <!-- Button trigger modal -->
                                         <button type="button"
                                                 class="btn btn-danger btn-sm"
-                                                data-toggle="modal" data-target="#exampleModalCenter{{ $office->id }}">
-                                            Excluir
+                                                data-toggle="modal" data-target="#exampleModalCenter{{ $office->id }}"
+                                                title="Excluir"
+                                        ><i class="fas fa-trash-alt"></i>
                                         </button>
                                     </td>
                                 </tr>

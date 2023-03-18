@@ -3,16 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Exports\StockMovementsExport;
-use App\Mail\NewStockMovementNotification;
 use App\Repositories\Material\MaterialRepository;
 use App\Repositories\Material\StockMovementFlowRepository;
 use App\Repositories\User\UserRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+
 use Maatwebsite\Excel\Facades\Excel;
-use Swift_Mailer;
-use Swift_Message;
-use Swift_SmtpTransport;
 
 
 class HomeController extends Controller
@@ -35,16 +31,19 @@ class HomeController extends Controller
         $this->materialRepository = $materialRepository;
     }
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index(): \Illuminate\Contracts\Support\Renderable
+    public function index(Request $request)
     {
-        $collaborators = $this->userRepository->getAllCollaborators();
-        $materials = $this->materialRepository->all();
-        $stockMovements = $this->stockMovementFlowRepository->paginate();
+        try {
+            $collaborators = $this->userRepository->getAllActivesCollaborators();
+            $materials = $this->materialRepository->getAllActivesMaterials();
+            $stockMovements = $this->stockMovementFlowRepository->getAllMovements($request->all());
+        } catch (\Exception $e) {
+            alert()->error($e->getMessage());
+
+            return redirect()
+                ->back();
+        }
+
         return view('home', compact('collaborators', 'materials', 'stockMovements'));
     }
 
@@ -52,11 +51,7 @@ class HomeController extends Controller
     {
         try {
             $this->stockMovementFlowRepository->addNewMovementRegister($request->all());
-//
-//            Mail::to('seu-email@dominio.com')
-//                ->send(new NewStockMovementNotification());
         } catch (\Exception $e) {
-
             alert()->error('Erro ao Registrar', $e->getMessage());
 
             return redirect()
@@ -69,9 +64,23 @@ class HomeController extends Controller
     }
 
 
-    public function exportExcel(): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    public function exportExcel()
     {
-        return Excel::download(new StockMovementsExport(), 'movimentacao-almoxarifado.xlsx');
+        try {
+            if ($this->stockMovementFlowRepository->all()->count() == 0) {
+                alert()->error('Erro ao Exportar', 'Não há registros para exportar');
+
+                return redirect()
+                    ->back();
+            }
+            return Excel::download(new StockMovementsExport(), 'movimentacao-almoxarifado.xlsx');
+
+        } catch (\Exception $e) {
+            alert()->error('Erro ao Exportar', $e->getMessage());
+
+            return redirect()
+                ->back();
+        }
     }
 
 }

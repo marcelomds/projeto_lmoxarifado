@@ -29,13 +29,21 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body p-0">
-                    <div class="d-flex justify-content-start m-2">
-                        <button type="button"
-                                class="btn btn-primary"
-                                data-toggle="modal"
-                                data-target="#myModal">Novo Registro <i class="fa fa-plus"></i></button>
-                    </div>
+                    <div class="d-flex justify-content-between m-2">
+                        <div>
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    data-toggle="modal"
+                                    data-target="#myModal">Novo Registro <i class="fa fa-plus"></i></button>
+                        </div>
 
+                        <div>
+                            <button type="button"
+                                    class="btn btn-primary"
+                                    data-toggle="modal"
+                                    data-target="#mySearchModal">Pesquisar <i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
 
                     <!-- Modal -->
                     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -107,6 +115,74 @@
                         </div>
                     </div>
 
+                    <!-- Seacrh Modal -->
+                    <div class="modal fade" id="mySearchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title" id="myModalLabel">Filtrar Movimentação</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form action="{{ route('home') }}" method="POST">
+                                        @csrf
+                                        <div class="form-group">
+                                            <label for="collaborator_id">Colaborador:</label>
+                                            <select class="form-control" id="collaborator_id" name="collaborator_id">
+                                                <option value="" selected disabled>-- Selecione --</option>
+                                                @forelse($collaborators as $collaborator)
+                                                    <option value="{{ $collaborator->id }}">{{ $collaborator->name }}</option>
+                                                @empty
+                                                    <option value="">Não há registros</option>
+                                                @endforelse
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="material_id">Material:</label>
+                                            <select class="form-control" id="material_id" name="material_id">
+                                                <option value="" selected disabled>-- Selecione --</option>
+                                                @forelse($materials as $material)
+                                                    <option value="{{ $material->id }}">{{ $material->name }}</option>
+                                                @empty
+                                                    <option value="">Não há registros</option>
+                                                @endforelse
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="date_start">Data Inicial:</label>
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="date_start"
+                                                   name="date_start">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="date_end">Data Final:</label>
+                                            <input type="date"
+                                                   class="form-control"
+                                                   id="date_end"
+                                                   name="date_end">
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label for="type">Tipo:</label>
+                                            <select class="form-control" id="type" name="type">
+                                                <option value="" selected disabled>-- Selecione --</option>
+                                                <option value="out">Retirada</option>
+                                                <option value="in">Devolução</option>
+                                            </select>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-primary">Pesquisar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table m-0">
                             <thead>
@@ -118,14 +194,21 @@
                                 <th>Material</th>
                                 <th>Quantidade</th>
                                 <th>Data</th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
                             @forelse($stockMovements as $movement)
                                 <tr>
                                     <td>{{ $movement->id }}</td>
-                                    <td>{{ $movement->collaborator->name }}</td>
-                                    <td>{{ $movement->collaborator->office->name }}</td>
+                                    @if($movement->collaborator_is_active == 1)
+                                        <td>{{ $movement->collaborator_name }}</td>
+                                    @else
+                                        <td>{{ $movement->collaborator_name }}
+                                            <span class="badge badge-danger">Bloqueado</span>
+                                        </td>
+                                    @endif
+                                    <td>{{ $movement->office_name }}</td>
                                     <td>
                                         @if($movement->type == 'out')
                                             <span class="badge badge-danger">Retirada</span>
@@ -133,7 +216,7 @@
                                             <span class="badge badge-success">Devolução</span>
                                         @endif
                                     </td>
-                                    <td>{{ $movement->material->name }}</td>
+                                    <td>{{ $movement->material_name }}</td>
                                     <td>{{ $movement->quantity }}</td>
                                     <td>{{ date('d/m/Y - H:i', strtotime($movement->date)) }}</td>
                                 </tr>

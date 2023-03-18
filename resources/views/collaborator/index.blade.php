@@ -35,16 +35,62 @@
                                 <td>{{ $collaborator->email }}</td>
                                 <td>{{ $collaborator->office->name }}</td>
                                 <td>{{ $collaborator->created_at->format('d/m/Y - H:i:s') }}</td>
-                                <td>
-                                    <a href="{{ route('user.edit', $collaborator->id) }}" class="btn btn-primary btn-sm">Editar</a>
+                                <td class="d-flex">
+                                    <a href="{{ route('user.edit', $collaborator->id) }}"
+                                       class="btn btn-primary btn-sm"
+                                        title="Editar"
+                                    >
+                                        <i class="fas fa-edit"></i>
+                                    </a>
                                     <!-- Button trigger modal -->
                                     <button type="button"
                                             class="btn btn-danger btn-sm"
-                                            data-toggle="modal" data-target="#exampleModalCenter{{ $collaborator->id }}">
-                                        Excluir
+                                            data-toggle="modal" data-target="#exampleModalCenter{{ $collaborator->id }}"
+                                            title="Excluir"
+                                    >
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
+
+                                        @if($collaborator->is_active == 1)
+                                            <button class="btn btn-info btn-sm"
+                                                    data-toggle="modal" data-target="#exampleModalCenterStatus{{ $collaborator->id }}"
+                                                    title="Bloquear"
+                                            ><i class='fa fa-check'></i></button>
+                                        @else
+                                            <button class="btn btn-secondary btn-sm"
+                                                data-toggle="modal" data-target="#exampleModalCenterStatus{{ $collaborator->id }}"
+                                                title="Desbloquear"
+                                            ><i class='fa fa-ban'></i></button>
+                                        @endif
+                                    </form>
                                 </td>
                             </tr>
+
+                            <!-- Status Modal -->
+                            <div class="modal fade" id="exampleModalCenterStatus{{ $collaborator->id }}"
+                                 tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLongTitle">Status Colaborador</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Deseja alterar status desse colaborador?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                            <form action="{{ route('user.status', $collaborator->id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn btn-primary">Confirmar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <!-- Delete Modal -->
                             <div class="modal fade" id="exampleModalCenter{{ $collaborator->id }}"

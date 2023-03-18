@@ -35,20 +35,67 @@
                                 <td>{{ $material->quantity }}</td>
                                 <td>{{ $material->created_at->format('d/m/Y - H:i:s') }}</td>
                                 <td>{{ $material->updated_at ? $material->updated_at->format('d/m/Y - H:i:s') : '-' }}</td>
-                                <td>
-                                    <a href="{{ route('material.edit', $material->id) }}" class="btn btn-primary btn-sm">Editar</a>
+                                <td class="d-flex">
+                                    <a href="{{ route('material.edit', $material->id) }}"
+                                       class="btn btn-primary btn-sm"
+                                       title="Editar"
+                                    >
+                                        <i class="fas fa-edit"></i>
+                                    </a>
                                     <!-- Button trigger modal -->
                                     <button type="button"
                                             class="btn btn-danger btn-sm"
-                                            data-toggle="modal" data-target="#exampleModalCenter{{ $material->id }}">
-                                        Excluir
+                                            data-toggle="modal" data-target="#exampleModalCenter{{ $material->id }}"
+                                            title="Excluir"
+                                        ><i class="fas fa-trash-alt"></i>
                                     </button>
+                                        @if($material->is_active == 1)
+                                            <button class="btn btn-info btn-sm"
+                                                    data-toggle="modal"
+                                                    data-target="#exampleModalCenterStatus{{ $material->id }}"
+                                                    title="Bloquear"
+                                            ><i class='fa fa-check'></i></button>
+                                        @else
+                                            <button class="btn btn-secondary btn-sm"
+                                                    data-toggle="modal"
+                                                    data-target="#exampleModalCenterStatus{{ $material->id }}"
+                                                    title="Desbloquear"
+                                            ><i class='fa fa-ban'></i></button>
+                                        @endif
+                                    </form>
                                 </td>
                             </tr>
 
+                            <!-- Status Modal -->
+                            <div class="modal fade" id="exampleModalCenterStatus{{ $material->id }}"
+                                 tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLongTitle">Status Material</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Deseja alterar status desse ítem?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                            <form action="{{ route('material.status', $material->id) }}" method="POST">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn btn-primary">Confirmar</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Delete Modal -->
                             <div class="modal fade" id="exampleModalCenter{{ $material->id }}"
-                                 tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                 tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+                                 aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -61,7 +108,9 @@
                                             Deseja remover esse ítem?
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                                Cancelar
+                                            </button>
                                             <form action="{{ route('material.destroy', $material->id) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')

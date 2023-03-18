@@ -23,6 +23,7 @@ class MaterialController extends Controller
     public function index()
     {
         $materials = $this->materialRepository->paginate();
+
         return view('material.index', compact('materials'));
     }
 
@@ -82,5 +83,23 @@ class MaterialController extends Controller
         toast('Removido com Sucesso', 'success');
 
         return redirect()->route('material.index');
+    }
+
+    public function updateStatus(int $id)
+    {
+        try {
+            $this->materialRepository->updateStatus($id);
+        } catch (\Exception $e) {
+
+            return redirect()
+                ->back()
+                ->withInput()
+                ->withErrors($e->getMessage());
+        }
+
+        toast('Atualizado com Sucesso', 'success');
+
+        return redirect()
+            ->route('material.index');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Repositories\User;
 
+use App\Constants\Status\StatusConst;
 use App\Models\User\User;
 use App\Repositories\AbstractRepository;
 
@@ -16,6 +17,15 @@ class UserRepository extends AbstractRepository
     {
         return $this->with('office')
             ->where('id', '!=', auth()->user()->id)
+            ->orderByDesc('id')
+            ->get();
+    }
+
+    public function getAllActivesCollaborators()
+    {
+        return $this->with('office')
+            ->where('id', '!=', auth()->user()->id)
+            ->where('is_active', StatusConst::ACTIVE)
             ->orderByDesc('id')
             ->get();
     }
@@ -46,5 +56,16 @@ class UserRepository extends AbstractRepository
         $this->getQuery()
             ->where('id', $id)
             ->delete();
+    }
+
+    public function updateStatus(int $id)
+    {
+        $user = $this->find($id);
+        if ($user->is_active == 1) {
+            $user->is_active = false;
+        } else {
+            $user->is_active = true;
+        }
+        $user->save();
     }
 }
